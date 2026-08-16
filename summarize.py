@@ -1,3 +1,5 @@
+# asks claude to summarize the alert
+
 import json
 from dotenv import load_dotenv
 import anthropic
