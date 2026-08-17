@@ -1,6 +1,28 @@
 import json 
 from dotenv import load_dotenv
 import anthropic
+#AI output validation
+from pydantic import BaseModel, ValidationError
+from typing import Literal
+
+class Triage(BaseModel):
+    severity: Literal["low", "medium", "high", "critical"]
+    verdict: Litral["true_positive", "false_positive", "needs_review"]
+    suspected_techniques: list[str]
+    reasoning: str
+
+def triage(alert):
+    #2 attempts
+    for attempt in range(2):
+        try:
+            raw = triage_raw(alert)
+            data = parse_json(raw)
+            return Triage(**data) #raises ValidationError if the schema is wrong
+        except ValidationError:
+            print(f"Validation failed.  Attempt {attempt + 1}/2")
+            #if second attempt, raise the error
+            if attempt == 1:
+                raise 
 
 load_dotenv()
 client=anthropic.Anthropic()
